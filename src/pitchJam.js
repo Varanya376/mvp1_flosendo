@@ -1,100 +1,225 @@
-import React, { useState } from 'react';
+// PitchJam Component
+const PitchJam = ({ onNavigate }) => {
+  const [activeCall, setActiveCall] = useState(null);
 
-const PitchJam = ({ onParticipantSelect }) => {
-  const [participants] = useState([
+  const pitchSessions = [
     {
       id: 1,
       name: 'Ivan',
+      time: '9:30 AM',
       company: 'Adobe',
-      logo: '🔺',
-      bgColor: '#ff0000',
-      time: '9:30am'
+      logo: '🎨',
+      logoColor: '#FF0000'
     },
     {
       id: 2,
       name: 'Vedika',
-      company: 'APT',
-      logo: 'APT',
-      bgColor: '#ff6b35',
-      time: '9:40am'
+      time: '9:40 AM',
+      company: 'Accenture',
+      logo: '📊',
+      logoColor: '#A100FF'
     },
     {
       id: 3,
       name: 'Varshitha',
+      time: '9:50 AM',
       company: 'BCG',
-      logo: 'BCG',
-      bgColor: '#00b894',
-      time: '9:50am'
+      logo: '💼',
+      logoColor: '#00B9CE'
     },
     {
       id: 4,
-      name: 'Xang',
+      name: 'Wang',
+      time: '10:00 AM',
       company: 'Microsoft',
-      logo: '⊞',
-      bgColor: '#0984e3',
-      time: '10:00am'
+      logo: '🖥️',
+      logoColor: '#0078D4'
     },
     {
       id: 5,
       name: 'Goel',
+      time: '10:20 AM',
       company: 'Cisco',
-      logo: '≡',
-      bgColor: '#00cec9',
-      time: '10:10am'
+      logo: '🌐',
+      logoColor: '#1BA0D7'
     }
-  ]);
+  ];
 
-  const handleParticipantClick = (participant) => {
-    console.log(`Participant clicked: ${participant.name}`);
-    onParticipantSelect(participant);
+  const handleJoinCall = (session) => {
+    setActiveCall(session);
   };
 
-  const handleExpandClick = () => {
-    console.log('Expand clicked');
-    alert('Showing more participants...');
-  };
+  if (activeCall) {
+    return <PitchCallInterface session={activeCall} onEndCall={() => setActiveCall(null)} onNavigate={onNavigate} />;
+  }
 
   return (
-    <main className="main-content">
-      <div className="pitch-jam-container">
-        <h2 className="pitch-jam-title">Pitch jam</h2>
+    <div className="auth-container">
+      <div className="auth-card pitchjam-card">
+        <div className="status-bar">
+        </div>
         
-        <div className="participants-list">
-          {participants.map((participant) => (
+        <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+          ←
+        </button>
+        
+        <h2 className="pitchjam-title">Pitch Jam</h2>
+        
+        <div className="pitch-sessions-list">
+          {pitchSessions.map((session) => (
             <div 
-              key={participant.id}
-              className="participant-item"
-              onClick={() => handleParticipantClick(participant)}
+              key={session.id}
+              className="pitch-session-item"
+              onClick={() => handleJoinCall(session)}
             >
-              <div 
-                className="participant-logo"
-                style={{ backgroundColor: participant.bgColor }}
-              >
-                <span className="logo-text">{participant.logo}</span>
+              <div className="session-left">
+                <div 
+                  className="company-logo"
+                  style={{ backgroundColor: session.logoColor }}
+                >
+                  <span className="logo-icon">{session.logo}</span>
+                </div>
+                <div className="session-info">
+                  <h4 className="session-name">{session.name}</h4>
+                  <p className="session-time">{session.time}</p>
+                </div>
               </div>
-              
-              <div className="participant-info">
-                <h3 className="participant-name">{participant.name}</h3>
-                <span className="participant-time">{participant.time}</span>
-              </div>
-              
-              <div className="participant-arrow">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m9 18 6-6-6-6"/>
-                </svg>
-              </div>
+              <span className="session-arrow">→</span>
             </div>
           ))}
         </div>
 
-        <div className="expand-button" onClick={handleExpandClick}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('my-notes')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
-export default PitchJam;
+// Pitch Call Interface Component
+const PitchCallInterface = ({ session, onEndCall, onNavigate }) => {
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [callDuration, setCallDuration] = useState('6:03');
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card pitch-call-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+            <span className="signal">📶</span>
+            <span className="wifi">📶</span>
+            <span className="battery">🔋</span>
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={onEndCall}>
+          ←
+        </button>
+        
+        <h2 className="call-title">Pitch Jam</h2>
+        
+        <div className="call-interface">
+          <div className="caller-info">
+            <div className="caller-avatar">
+              <span className="avatar-placeholder">👤</span>
+            </div>
+            <h3 className="caller-name">{session.name}</h3>
+            <p className="caller-email">{session.name.toLowerCase()}@london.edu</p>
+          </div>
+
+          <div className="call-video-area">
+            <div className="video-placeholder">
+              <div 
+                className="call-duration-badge"
+                style={{ backgroundColor: '#FF0000' }}
+              >
+                <span className="duration-dot">●</span>
+                <span className="duration-text">{callDuration}</span>
+              </div>
+              <div className="video-avatar">
+                <span className="video-avatar-icon">👤</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="call-controls">
+            <button 
+              className={`control-btn ${isMuted ? 'muted' : ''}`}
+              onClick={() => setIsMuted(!isMuted)}
+            >
+              {isMuted ? '🔇' : '🎤'}
+            </button>
+            
+            <button 
+              className={`control-btn ${isVideoOff ? 'video-off' : ''}`}
+              onClick={() => setIsVideoOff(!isVideoOff)}
+            >
+              {isVideoOff ? '📹' : '📷'}
+            </button>
+            
+            <button 
+              className="control-btn end-call-btn"
+              onClick={onEndCall}
+            >
+              📞
+            </button>
+          </div>
+
+          <div className="call-footer">
+            <p className="help-text">Help and support</p>
+          </div>
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('my-notes')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Export the components
+export { PitchJam, PitchCallInterface };

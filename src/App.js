@@ -1,867 +1,2836 @@
+
 import React, { useState } from 'react';
 import './App.css';
-import MissionDetail from './missionDetail'; // Import your MissionDetail component
-import Scheduler from './scheduler'; // Import your Scheduler component
-import PitchJam from './pitchJam'; // Import your PitchJam component
-import ParticipantDetail from './participantdetail'; // Import your ParticipantDetail component
-import LeaderBoard from './leaderboard'; // Import your LeaderBoard component
 
-const App = () => {
-  const [currentPage, setCurrentPage] = useState('splash');
-  const [selectedMission, setSelectedMission] = useState(null);
-  const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [authMode, setAuthMode] = useState('login');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+// Scheduler Component
+const Scheduler = ({ onNavigate }) => {
+  const [selectedDate, setSelectedDate] = useState(20);
+  const [showNewEvent, setShowNewEvent] = useState(false);
 
-  const handleDashboardClick = () => {
-    setCurrentPage('dashboard');
-  };
+  const calendarDays = [
+    { date: 19, day: 'Fri', isActive: false },
+    { date: 20, day: 'Sat', isActive: true },
+    { date: 21, day: 'Sun', isActive: false },
+    { date: 22, day: 'Mon', isActive: false }
+  ];
 
-  const handleHomeClick = () => {
-    if (isAuthenticated) {
-      setCurrentPage('home');
-    } else {
-      setCurrentPage('splash');
+  const events = [
+    {
+      id: 1,
+      title: 'EDEN Day 1',
+      time: '10:30 AM - 11:30 AM',
+      timeSlot: '10 am',
+      color: '#f0f0f0',
+      textColor: '#333'
+    },
+    {
+      id: 2,
+      title: 'EDEN Day 2',
+      time: '12:40 PM - 1:40 PM',
+      timeSlot: '12 pm',
+      color: '#E8B4FF',
+      textColor: '#333'
     }
-  };
+  ];
 
-  const handleMissionClick = () => {
-    setCurrentPage('missions');
-  };
+  const timeSlots = [
+    '10 am',
+    '11 am', 
+    '12 pm',
+    '01 pm',
+    '02 pm'
+  ];
 
-  const handleDiscussionClick = () => {
-    setCurrentPage('discussion');
-  };
-
-  const handleFeedbackClick = () => {
-    setCurrentPage('feedback');
-  };
-
-  const handleSpecificMissionClick = (missionNumber, instructor) => {
-    console.log(`Clicking mission ${missionNumber}`); // Debug log
-    setSelectedMission({ number: missionNumber, instructor: instructor });
-    setCurrentPage('missionDetail');
-  };
-
-  const handleParticipantSelect = (participant) => {
-    console.log(`Selecting participant: ${participant.name}`);
-    setSelectedParticipant(participant);
-    setCurrentPage('participantDetail');
-  };
-
-  const handleBackClick = () => {
-    if (currentPage === 'missionDetail') {
-      setCurrentPage('missions');
-    } else if (currentPage === 'participantDetail') {
-      setCurrentPage('pitchJam');
-    } else if (currentPage === 'missions' || currentPage === 'scheduler' || currentPage === 'pitchJam' || currentPage === 'leaderBoard' || currentPage === 'discussion' || currentPage === 'feedback') {
-      setCurrentPage('dashboard');
-    } else if (currentPage === 'dashboard') {
-      setCurrentPage('home');
-    }
-  };
-
-  const handleCardClick = (cardName) => {
-    if (cardName === 'Mission') {
-      setCurrentPage('missions');
-    } else if (cardName === 'Scheduler') {
-      setCurrentPage('scheduler');
-    } else if (cardName === 'Pitch Jam') {
-      setCurrentPage('pitchJam');
-    } else if (cardName === 'Leader Board') {
-      setCurrentPage('leaderBoard');
-    } else if (cardName === 'Discussion Forum') {
-      setCurrentPage('discussion');
-    } else if (cardName === 'Feedback') {
-      setCurrentPage('feedback');
-    } else {
-      alert(`You clicked on ${cardName}! This feature will be available soon.`);
-    }
-  };
-
-  // Discussion Forum specific handlers
-  const handleChatroomClick = (roomName) => {
-    alert(`Joining ${roomName} chatroom...`);
-  };
-
-  const handleDiscussionItemClick = (subject) => {
-    alert(`Opening discussion: ${subject}`);
-  };
-
-  const handleSearchClick = () => {
-    alert('Search functionality coming soon!');
-  };
-
-  const handleAddDiscussionClick = () => {
-    alert('Create new discussion coming soon!');
-  };
-
-  // Feedback page specific handlers
-  const handleFeedbackSearchClick = () => {
-    alert('Search feedback coming soon!');
-  };
-
-  const handleFeedbackCardClick = (cardName) => {
-    alert(`Opening ${cardName}...`);
-  };
-
-  const handleAddFeedbackClick = () => {
-    alert('Add new feedback coming soon!');
-  };
-
-  // Authentication handlers
-  const handleSplashClick = () => {
-    setCurrentPage('login');
-  };
-
-  const handleAuthToggle = (mode) => {
-    setAuthMode(mode);
-    setCurrentPage(mode);
-  };
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-    setCurrentPage('profile');
-  };
-
-  const handleSignUp = () => {
-    setIsAuthenticated(true);
-    setCurrentPage('profile');
-  };
-
-  const handleProfileComplete = () => {
-    setCurrentPage('home');
-  };
-
-  const handleForgotPassword = () => {
-    alert('Forgot password functionality coming soon!');
-  };
-
-  const handleHelpSupport = () => {
-    alert('Help and support coming soon!');
-  };
-
-  const renderContent = () => {
-    // Authentication flow
-    if (currentPage === 'splash') {
-      return (
-        <div className="splash-container" onClick={handleSplashClick}>
-          <div className="splash-logo">
-            <div className="splash-logo-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-              </svg>
-            </div>
-            <div className="splash-logo-text">FLOSENDO</div>
-          </div>
+  return (
+    <div className="auth-container">
+      <div className="auth-card scheduler-card">
+        <div className="status-bar">
         </div>
-      );
-    }
-
-    if (currentPage === 'login') {
-      return (
-        <div className="auth-container">
-          <div className="auth-card">
-            <div className="login-content">
-              <div className="login-header">
-                <div className="login-logo">
-                  <div className="login-logo-icon">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
-                      <rect x="3" y="3" width="7" height="7" rx="1"/>
-                      <rect x="14" y="3" width="7" height="7" rx="1"/>
-                      <rect x="14" y="14" width="7" height="7" rx="1"/>
-                      <rect x="3" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                  </div>
-                  <div className="login-logo-text">FLOSENDO</div>
-                </div>
-              </div>
-
-              <div className="login-form">
-                <div className="input-group">
-                  <input 
-                    type="email" 
-                    className="input-field" 
-                    placeholder="Email address"
-                  />
-                </div>
-                
-                <div className="input-group">
-                  <input 
-                    type="password" 
-                    className="input-field" 
-                    placeholder="Password"
-                  />
-                  <div className="forgot-password">
-                    <a href="#" className="forgot-password-link" onClick={handleForgotPassword}>
-                      Forgot Password?
-                    </a>
-                  </div>
-                </div>
-
-                <button className="confirm-btn" onClick={handleLogin}>
-                  CONFIRM
-                </button>
-
-                <div style={{textAlign: 'center', marginTop: '20px'}}>
-                  <span style={{color: '#666', fontSize: '14px'}}>
-                    Don't have an account? 
-                    <a 
-                      href="#" 
-                      style={{color: '#a855f7', marginLeft: '5px'}}
-                      onClick={() => handleAuthToggle('signup')}
-                    >
-                      Sign Up
-                    </a>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+          ←
+        </button>
+        
+        <div className="scheduler-header">
+          <h2 className="scheduler-title">Scheduler</h2>
+          <button 
+            className="add-event-btn"
+            onClick={() => setShowNewEvent(true)}
+          >
+            +
+          </button>
         </div>
-      );
-    }
 
-    if (currentPage === 'signup') {
-      return (
-        <div className="auth-container">
-          <div className="auth-card">
-            <div className="signup-content">
-              <div className="signup-header">
-                <div className="signup-logo">
-                  <div className="signup-logo-icon">
-                    <svg width="25" height="25" viewBox="0 0 24 24" fill="white">
-                      <rect x="3" y="3" width="7" height="7" rx="1"/>
-                      <rect x="14" y="3" width="7" height="7" rx="1"/>
-                      <rect x="14" y="14" width="7" height="7" rx="1"/>
-                      <rect x="3" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                  </div>
-                  <div className="signup-logo-text">FLOSENDO</div>
-                </div>
-                
-                <div className="auth-toggle">
-                  <button 
-                    className={`auth-toggle-btn ${authMode === 'login' ? 'active' : ''}`}
-                    onClick={() => handleAuthToggle('login')}
-                  >
-                    LOG IN
-                  </button>
-                  <button 
-                    className={`auth-toggle-btn ${authMode === 'signup' ? 'active' : ''}`}
-                    onClick={() => handleAuthToggle('signup')}
-                  >
-                    SIGN UP
-                  </button>
-                </div>
-              </div>
-
-              <div className="signup-form">
-                <input type="text" className="input-field" placeholder="Full Name" />
-                <input type="email" className="input-field" placeholder="School Email" />
-                <input type="password" className="input-field" placeholder="Set Password" />
-                <input type="password" className="input-field" placeholder="Re-enter Password" />
-                
-                <button className="confirm-btn" onClick={handleSignUp}>
-                  CONFIRM
-                </button>
-              </div>
-            </div>
-          </div>
+        <div className="date-header">
+          <h3 className="date-title">May, 20</h3>
+          <p className="task-count">15 task today</p>
         </div>
-      );
-    }
 
-    if (currentPage === 'profile') {
-      return (
-        <div className="profile-container">
-          <div className="profile-header">
-            <button className="profile-back-btn" onClick={() => setCurrentPage('login')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="m15 18-6-6 6-6"/>
-              </svg>
-            </button>
-            
-            <div className="profile-user-info">
-              <div className="profile-avatar">VR</div>
-              <div className="profile-user-details">
-                <h3>VARSHITHA REDDY</h3>
-                <p>Ratino</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="profile-content">
-            <div className="profile-details">
-              <div className="profile-detail-row">
-                <span className="profile-detail-label">Course:</span>
-                <span className="profile-detail-value">Level 1</span>
-              </div>
-              <div className="profile-detail-row">
-                <span className="profile-detail-label">Batch:</span>
-                <span className="profile-detail-value">2025-2026</span>
-              </div>
-              <div className="profile-detail-row">
-                <span className="profile-detail-label">Grade:</span>
-                <span className="profile-detail-value">8</span>
-              </div>
-              <div className="profile-detail-row">
-                <span className="profile-detail-label">Badge:</span>
-                <span className="profile-detail-value">Bronze</span>
-              </div>
-            </div>
-
-            <div className="profile-help" onClick={handleHelpSupport}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-              <span>Help and support</span>
-            </div>
-
-            <button 
-              className="confirm-btn" 
-              style={{width: '100%', marginTop: '20px'}}
-              onClick={handleProfileComplete}
+        <div className="calendar-row">
+          {calendarDays.map((day) => (
+            <div 
+              key={day.date}
+              className={`calendar-day ${day.isActive ? 'active' : ''}`}
+              onClick={() => setSelectedDate(day.date)}
             >
-              Continue to App
-            </button>
+              <span className="day-number">{day.date}</span>
+              <span className="day-name">{day.day}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="schedule-timeline">
+          {timeSlots.map((timeSlot) => {
+            const event = events.find(e => e.timeSlot === timeSlot);
+            return (
+              <div key={timeSlot} className="timeline-row">
+                <div className="time-label">{timeSlot}</div>
+                <div className="timeline-content">
+                  {event && (
+                    <div 
+                      className="event-card"
+                      style={{ 
+                        backgroundColor: event.color,
+                        color: event.textColor 
+                      }}
+                    >
+                      <h4 className="event-title">{event.title}</h4>
+                      <p className="event-time">{event.time}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('mission-list')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">Missions</span>
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📅</span>
+            <span className="nav-label">Calendar</span>
           </div>
         </div>
-      );
+
+        {/* New Event Modal */}
+        {showNewEvent && (
+          <NewEventModal 
+            onClose={() => setShowNewEvent(false)}
+            onSave={(eventData) => {
+              console.log('New event:', eventData);
+              setShowNewEvent(false);
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+// PitchJam Component
+const PitchJam = ({ onNavigate }) => {
+  const [activeCall, setActiveCall] = useState(null);
+
+  const pitchSessions = [
+    {
+      id: 1,
+      name: 'Ivan',
+      time: '9:30 AM',
+      company: 'Adobe',
+      logo: '🎨',
+      logoColor: '#FF0000'
+    },
+    {
+      id: 2,
+      name: 'Vedika',
+      time: '9:40 AM',
+      company: 'Accenture',
+      logo: '📊',
+      logoColor: '#A100FF'
+    },
+    {
+      id: 3,
+      name: 'Varshitha',
+      time: '9:50 AM',
+      company: 'BCG',
+      logo: '💼',
+      logoColor: '#00B9CE'
+    },
+    {
+      id: 4,
+      name: 'Wang',
+      time: '10:00 AM',
+      company: 'Microsoft',
+      logo: '🖥️',
+      logoColor: '#0078D4'
+    },
+    {
+      id: 5,
+      name: 'Goel',
+      time: '10:20 AM',
+      company: 'Cisco',
+      logo: '🌐',
+      logoColor: '#1BA0D7'
     }
+  ];
 
-    // Main app content (only if authenticated)
-    if (!isAuthenticated) {
-      return null;
-    }
+  const handleJoinCall = (session) => {
+    setActiveCall(session);
+  };
 
-    if (currentPage === 'feedback') {
-      return (
-        <main className="main-content">
-          <div className="feedback-container">
-            <div className="feedback-header">
-              <div className="feedback-header-left">
-                <button className="feedback-back-btn" onClick={handleBackClick}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m15 18-6-6 6-6"/>
-                  </svg>
-                </button>
-                <h1 className="feedback-title">Feedback</h1>
+  if (activeCall) {
+    return <PitchCallInterface session={activeCall} onEndCall={() => setActiveCall(null)} onNavigate={onNavigate} />;
+  }
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card pitchjam-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+          ←
+        </button>
+        
+        <h2 className="pitchjam-title">Pitch Jam</h2>
+        
+        <div className="pitch-sessions-list">
+          {pitchSessions.map((session) => (
+            <div 
+              key={session.id}
+              className="pitch-session-item"
+              onClick={() => handleJoinCall(session)}
+            >
+              <div className="session-left">
+                <div 
+                  className="company-logo"
+                  style={{ backgroundColor: session.logoColor }}
+                >
+                  <span className="logo-icon">{session.logo}</span>
+                </div>
+                <div className="session-info">
+                  <h4 className="session-name">{session.name}</h4>
+                  <p className="session-time">{session.time}</p>
+                </div>
               </div>
-              <button className="feedback-search-btn" onClick={handleFeedbackSearchClick}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="m21 21-4.35-4.35"/>
-                </svg>
-              </button>
+              <span className="session-arrow">→</span>
             </div>
+          ))}
+        </div>
 
-            <div className="feedback-cards-container">
-              <div className="feedback-card feedback-1" onClick={() => handleFeedbackCardClick('Feedback 1')}>
-                <div className="feedback-card-content">
-                  <h3 className="feedback-card-title">Feedback 1</h3>
-                </div>
-                <div className="feedback-card-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                </div>
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('my-notes')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Pitch Call Interface Component
+const PitchCallInterface = ({ session, onEndCall, onNavigate }) => {
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [callDuration, setCallDuration] = useState('6:03');
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card pitch-call-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={onEndCall}>
+          ←
+        </button>
+        
+        <h2 className="call-title">Pitch Jam</h2>
+        
+        <div className="call-interface">
+          <div className="caller-info">
+            <div className="caller-avatar">
+              <span className="avatar-placeholder">👤</span>
+            </div>
+            <h3 className="caller-name">{session.name}</h3>
+            <p className="caller-email">{session.name.toLowerCase()}@london.edu</p>
+          </div>
+
+          <div className="call-video-area">
+            <div className="video-placeholder">
+              <div 
+                className="call-duration-badge"
+                style={{ backgroundColor: '#FF0000' }}
+              >
+                <span className="duration-dot">●</span>
+                <span className="duration-text">{callDuration}</span>
               </div>
-
-              <div className="feedback-card todo" onClick={() => handleFeedbackCardClick('To Do')}>
-                <div className="feedback-card-content">
-                  <h3 className="feedback-card-title">To Do</h3>
-                </div>
-                <div className="feedback-card-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                </div>
+              <div className="video-avatar">
+                <span className="video-avatar-icon">👤</span>
               </div>
             </div>
+          </div>
 
-            <button className="feedback-floating-btn" onClick={handleAddFeedbackClick}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
+          <div className="call-controls">
+            <button 
+              className={`control-btn ${isMuted ? 'muted' : ''}`}
+              onClick={() => setIsMuted(!isMuted)}
+            >
+              {isMuted ? '🔇' : '🎤'}
             </button>
-          </div>
-        </main>
-      );
-    } else if (currentPage === 'discussion') {
-      return (
-        <main className="main-content">
-          <div className="discussion-container">
-            <div className="discussion-header">
-              <button className="discussion-back-btn" onClick={handleBackClick}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m15 18-6-6 6-6"/>
-                </svg>
-              </button>
-              <h1 className="discussion-title">DISCUSSION FORUM</h1>
-            </div>
-
-            <div className="search-container">
-              <div className="search-box">
-                <input 
-                  type="text" 
-                  className="search-input" 
-                  placeholder="Search..." 
-                />
-                <div className="search-icon" onClick={handleSearchClick}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
-                  </svg>
-                </div>
-              </div>
-              <button className="add-btn" onClick={handleAddDiscussionClick}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </button>
-            </div>
-
-            <div className="chatrooms-section">
-              <h3 className="chatrooms-title">Chatrooms</h3>
-              <div className="chatrooms-grid">
-                <div className="chatroom-bubble eeg" onClick={() => handleChatroomClick('EEG PROJECT')}>
-                  <div className="chatroom-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                  <div className="chatroom-name">EEG PROJECT</div>
-                </div>
-                <div className="chatroom-bubble mess" onClick={() => handleChatroomClick('MESS MENU')}>
-                  <div className="chatroom-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                  <div className="chatroom-name">MESS MENU</div>
-                </div>
-                <div className="chatroom-bubble vip" onClick={() => handleChatroomClick('VIP GANG')}>
-                  <div className="chatroom-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                  <div className="chatroom-name">VIP GANG</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="discussions-list">
-              <div className="discussion-item" onClick={() => handleDiscussionItemClick('Computer Networks')}>
-                <div className="discussion-icon networks">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                    <line x1="8" y1="21" x2="16" y2="21"/>
-                    <line x1="12" y1="17" x2="12" y2="21"/>
-                  </svg>
-                </div>
-                <div className="discussion-content">
-                  <div className="discussion-subject">Computer Networks</div>
-                  <p className="discussion-description">No class today</p>
-                </div>
-                <div className="discussion-meta">
-                  <div className="discussion-time">08:43</div>
-                </div>
-              </div>
-
-              <div className="discussion-item" onClick={() => handleDiscussionItemClick('UI/UX')}>
-                <div className="discussion-icon uiux">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                    <polyline points="7.5,8 12,5 16.5,8"/>
-                    <polyline points="7.5,16 12,13 16.5,16"/>
-                  </svg>
-                </div>
-                <div className="discussion-content">
-                  <div className="discussion-subject">UI/UX</div>
-                  <p className="discussion-description">Project deadline on 24th May</p>
-                </div>
-                <div className="discussion-meta">
-                  <div className="discussion-time">Tue</div>
-                </div>
-              </div>
-
-              <div className="discussion-item" onClick={() => handleDiscussionItemClick('PD')}>
-                <div className="discussion-icon pd">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
-                </div>
-                <div className="discussion-content">
-                  <div className="discussion-subject">PD</div>
-                  <p className="discussion-description">Resume submission</p>
-                </div>
-                <div className="discussion-meta">
-                  <div className="discussion-time">Sun</div>
-                </div>
-              </div>
-
-              <div className="discussion-item" onClick={() => handleDiscussionItemClick('DBMS')}>
-                <div className="discussion-icon dbms">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                  </svg>
-                </div>
-                <div className="discussion-content">
-                  <div className="discussion-subject">DBMS</div>
-                  <p className="discussion-description">Lab exam on 15th May</p>
-                </div>
-                <div className="discussion-meta">
-                  <div className="discussion-time">23 Mar</div>
-                </div>
-              </div>
-
-              <div className="discussion-item" onClick={() => handleDiscussionItemClick('ALGO')}>
-                <div className="discussion-icon algo">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-                <div className="discussion-content">
-                  <div className="discussion-subject">ALGO</div>
-                  <p className="discussion-description">Algorithm practice session</p>
-                </div>
-                <div className="discussion-meta">
-                  <div className="discussion-time">18 Mar</div>
-                </div>
-              </div>
-
-              <div className="discussion-item" onClick={() => handleDiscussionItemClick('Hitisha')}>
-                <div className="discussion-icon hitisha">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
-                </div>
-                <div className="discussion-content">
-                  <div className="discussion-subject">Hitisha</div>
-                  <p className="discussion-description">General discussion</p>
-                </div>
-                <div className="discussion-meta">
-                  <div className="discussion-time">01 Feb</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      );
-    } else if (currentPage === 'leaderBoard') {
-      // Use your LeaderBoard component
-      return <LeaderBoard />;
-    } else if (currentPage === 'participantDetail' && selectedParticipant) {
-      // Use your ParticipantDetail component
-      return <ParticipantDetail participant={selectedParticipant} />;
-    } else if (currentPage === 'pitchJam') {
-      // Use your PitchJam component
-      return <PitchJam onParticipantSelect={handleParticipantSelect} />;
-    } else if (currentPage === 'scheduler') {
-      // Use your Scheduler component
-      return <Scheduler />;
-    } else if (currentPage === 'missionDetail' && selectedMission) {
-      // Use your MissionDetail component
-      return <MissionDetail selectedMission={selectedMission} />;
-    } else if (currentPage === 'missions') {
-      return (
-        <main className="main-content">
-          <div className="missions-container">
-            <h2 className="missions-title">Missions</h2>
             
-            <div className="mission-list">
-              <div className="mission-item" onClick={() => handleSpecificMissionClick(1, 'Ms. Preeti Priya')}>
-                <div className="mission-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v.4"/>
-                    <path d="M11 2v2h2V2"/>
-                    <path d="M8 2v2h2V2"/>
-                    <rect width="16" height="12" x="4" y="6" rx="2"/>
-                    <path d="m9 11 2 2 4-4"/>
-                  </svg>
-                </div>
-                <div className="mission-content">
-                  <h3 className="mission-title">Mission 1</h3>
-                  <p className="mission-instructor">Ms. Preeti Priya</p>
-                </div>
-                <div className="mission-arrow">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div className="mission-item" onClick={() => handleSpecificMissionClick(2, 'Mr. Ram Mohan Vemuri')}>
-                <div className="mission-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
-                    <path d="M9 2v20"/>
-                    <path d="m13 7 5 5-5 5"/>
-                  </svg>
-                </div>
-                <div className="mission-content">
-                  <h3 className="mission-title">Mission 2</h3>
-                  <p className="mission-instructor">Mr. Ram Mohan Vemuri</p>
-                </div>
-                <div className="mission-arrow">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div className="mission-item" onClick={() => handleSpecificMissionClick(3, 'Mr. Veeraiah')}>
-                <div className="mission-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                    <circle cx="12" cy="12" r="4"/>
-                  </svg>
-                </div>
-                <div className="mission-content">
-                  <h3 className="mission-title">Mission 3</h3>
-                  <p className="mission-instructor">Mr. Veeraiah</p>
-                </div>
-                <div className="mission-arrow">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div className="mission-item" onClick={() => handleSpecificMissionClick(4, 'Ms. Prafulla')}>
-                <div className="mission-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect width="20" height="16" x="2" y="4" rx="2"/>
-                    <path d="M6 8h.01"/>
-                    <path d="M10 8h.01"/>
-                    <path d="M14 8h.01"/>
-                  </svg>
-                </div>
-                <div className="mission-content">
-                  <h3 className="mission-title">Mission 4</h3>
-                  <p className="mission-instructor">Ms. Prafulla</p>
-                </div>
-                <div className="mission-arrow">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div className="mission-item" onClick={() => handleSpecificMissionClick(5, 'Mr. Gourav Saha')}>
-                <div className="mission-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-                    <circle cx="10" cy="8" r="2"/>
-                    <path d="m20 13.5-2-2-4 4-2-2-4 4"/>
-                  </svg>
-                </div>
-                <div className="mission-content">
-                  <h3 className="mission-title">Mission 5</h3>
-                  <p className="mission-instructor">Mr. Gourav Saha</p>
-                </div>
-                <div className="mission-arrow">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="missions-nav-arrow">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 9l6 6 6-6"/>
-              </svg>
-            </div>
+            <button 
+              className={`control-btn ${isVideoOff ? 'video-off' : ''}`}
+              onClick={() => setIsVideoOff(!isVideoOff)}
+            >
+              {isVideoOff ? '📹' : '📷'}
+            </button>
+            
+            <button 
+              className="control-btn end-call-btn"
+              onClick={onEndCall}
+            >
+              📞
+            </button>
           </div>
-        </main>
-      );
-    } else if (currentPage === 'dashboard') {
-      return (
-        <main className="main-content">
-          <div className="grid-container">
-            <div className="grid-item">
-              <div className="card" onClick={() => handleCardClick('Mission')}>
-                <div className="card-image">
-                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                    <path d="m2 17 10 5 10-5"/>
-                    <path d="m2 12 10 5 10-5"/>
-                  </svg>
-                </div>
-                <h2 className="card-title">Mission</h2>
-              </div>
-            </div>
 
-            <div className="grid-item">
-              <div className="card" onClick={() => handleCardClick('Discussion Forum')}>
-                <div className="card-image">
-                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    <circle cx="9" cy="9" r="1"/>
-                    <circle cx="15" cy="9" r="1"/>
-                    <circle cx="12" cy="13" r="1"/>
-                  </svg>
-                </div>
-                <h2 className="card-title">Discussion<br />Forum</h2>
-              </div>
-            </div>
-
-            <div className="grid-item">
-              <div className="card" onClick={() => handleCardClick('Leader Board')}>
-                <div className="card-image">
-                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="m22 21-3-3m3 3-3-3m3 3v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                </div>
-                <h2 className="card-title">Leader<br />Board</h2>
-              </div>
-            </div>
-
-            <div className="grid-item">
-              <div className="card" onClick={() => handleCardClick('Scheduler')}>
-                <div className="card-image">
-                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                </div>
-                <h2 className="card-title">Scheduler</h2>
-              </div>
-            </div>
-
-            <div className="grid-item">
-              <div className="card" onClick={() => handleCardClick('Pitch Jam')}>
-                <div className="card-image">
-                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-                <h2 className="card-title">Pitch Jam</h2>
-              </div>
-            </div>
-
-            <div className="grid-item">
-              <div className="card" onClick={() => handleCardClick('Feedback')}>
-                <div className="card-image">
-                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                  </svg>
-                </div>
-                <h2 className="card-title">Feedback</h2>
-              </div>
-            </div>
+          <div className="call-footer">
+            <p className="help-text">Help and support</p>
           </div>
-        </main>
-      );
-    }
-
-    // Default home page
-    return (
-      <main className="main-content">
-        <div className="welcome-container">
-          <h2>Welcome to Your App</h2>
-          <p>Click on Dashboard below to get started!</p>
         </div>
-      </main>
-    );
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('my-notes')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// My Notes Component
+const MyNotes = ({ onNavigate }) => {
+  const [expandedNote, setExpandedNote] = useState(null);
+
+  const notes = [
+    {
+      id: 1,
+      title: 'Feedback',
+      content: 'Refine the introduction part\nList the clear storyline of pitch deck',
+      color: '#E8F8F5',
+      category: 'feedback'
+    },
+    {
+      id: 2,
+      title: 'To Do List',
+      content: 'Refine the introduction part\nList the clear storyline of pitch deck',
+      color: '#F3E8FF',
+      category: 'todo'
+    }
+  ];
+
+  const toggleNote = (noteId) => {
+    setExpandedNote(expandedNote === noteId ? null : noteId);
   };
 
   return (
-    <div className="app-container">
-      {/* Only show header and footer for authenticated main app pages */}
-      {isAuthenticated && !['splash', 'login', 'signup', 'profile'].includes(currentPage) && (
-        <header className="header">
-          <div className="back-button" onClick={handleBackClick}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-          </div>
-          <h1 className="header-title">
-            {currentPage === 'dashboard' ? 'Dashboard' : 
-             currentPage === 'missions' ? 'Missions' :
-             currentPage === 'scheduler' ? 'Scheduler' :
-             currentPage === 'pitchJam' ? 'Pitch Jam' :
-             currentPage === 'leaderBoard' ? 'Leader Board' :
-             currentPage === 'discussion' ? 'Discussion Forum' :
-             currentPage === 'feedback' ? 'Feedback' :
-             currentPage === 'participantDetail' && selectedParticipant ? selectedParticipant.name :
-             currentPage === 'missionDetail' && selectedMission ? `Mission ${selectedMission.number}` : 'Home'}
-          </h1>
-        </header>
-      )}
+    <div className="auth-container">
+      <div className="auth-card notes-card">
+        <div className="status-bar">
+        </div>
+        
+        <div className="notes-header">
+          <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+            ←
+          </button>
+          <h2 className="notes-title">My Notes</h2>
+          <button 
+            className="add-note-btn"
+            onClick={() => onNavigate('new-note')}
+          >
+            +
+          </button>
+        </div>
 
-      {renderContent()}
+        <div className="notes-search">
+          <div className="search-input-container">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              placeholder="Search notes..."
+              className="notes-search-input"
+            />
+          </div>
+        </div>
+        
+        <div className="notes-list">
+          {notes.map((note) => (
+            <div 
+              key={note.id}
+              className="note-item"
+              style={{ backgroundColor: note.color }}
+            >
+              <div 
+                className="note-header"
+                onClick={() => toggleNote(note.id)}
+              >
+                <h4 className="note-title">{note.title}</h4>
+                <span className={`expand-arrow ${expandedNote === note.id ? 'expanded' : ''}`}>
+                  {expandedNote === note.id ? '▲' : '▼'}
+                </span>
+              </div>
+              
+              {expandedNote === note.id && (
+                <div className="note-content">
+                  <p className="note-text">{note.content}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
-      {/* Only show footer for authenticated main app pages */}
-      {isAuthenticated && !['splash', 'login', 'signup', 'profile'].includes(currentPage) && (
-        <footer className="footer">
+        <div className="student-bottom-nav">
           <div 
-            className={`nav-item ${currentPage === 'home' ? 'active' : ''}`}
-            onClick={handleHomeClick}
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9,22 9,12 15,12 15,22"/>
-            </svg>
-            <span className="nav-text">Home</span>
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
           </div>
           <div 
-            className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}
-            onClick={handleDashboardClick}
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect width="7" height="9" x="3" y="3" rx="1"/>
-              <rect width="7" height="5" x="14" y="3" rx="1"/>
-              <rect width="7" height="9" x="14" y="12" rx="1"/>
-              <rect width="7" height="5" x="3" y="16" rx="1"/>
-            </svg>
-            <span className="nav-text">Dashboard</span>
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// New Note Component
+const NewNote = ({ onNavigate }) => {
+  const [noteData, setNoteData] = useState({
+    title: '',
+    content: '',
+    category: 'todo'
+  });
+
+  const handleInputChange = (field, value) => {
+    setNoteData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = () => {
+    console.log('Saving note:', noteData);
+    onNavigate('my-notes');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card new-note-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('my-notes')}>
+          ←
+        </button>
+        
+        <h2 className="new-note-title">New Note</h2>
+        
+        <div className="new-note-form">
+          <div className="note-form-group">
+            <div className="form-icon-note">📝</div>
+            <div className="note-category-selector">
+              <button 
+                className={`category-btn ${noteData.category === 'todo' ? 'active' : ''}`}
+                onClick={() => handleInputChange('category', 'todo')}
+              >
+                To Do List
+              </button>
+            </div>
+          </div>
+
+          <div className="note-content-area">
+            <textarea
+              placeholder="Refine the introduction part
+List the clear storyline of pitch deck"
+              value={noteData.content}
+              onChange={(e) => handleInputChange('content', e.target.value)}
+              className="note-textarea"
+              rows="8"
+            />
+          </div>
+
+          <button 
+            className="confirm-note-btn"
+            onClick={handleSave}
+            disabled={!noteData.content.trim()}
+          >
+            CONFIRM
+          </button>
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
           </div>
           <div 
-            className={`nav-item ${currentPage === 'discussion' ? 'active' : ''}`}
-            onClick={handleDiscussionClick}
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            <span className="nav-text">Discussion</span>
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// New Event Modal Component
+const NewEventModal = ({ onClose, onSave }) => {
+  const [eventData, setEventData] = useState({
+    title: '',
+    participants: '',
+    description: '',
+    allDay: false,
+    startDate: '10 Jul 2025',
+    startTime: '8:00 AM',
+    endDate: '10 Jul 2025',
+    endTime: '9:00 AM'
+  });
+
+  const handleInputChange = (field, value) => {
+    setEventData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = () => {
+    onSave(eventData);
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="auth-card new-event-modal">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={onClose}>
+          ←
+        </button>
+
+        <div className="new-event-header">
+          <div className="event-organizer">
+            <div className="organizer-avatar">👧</div>
+            <div className="organizer-info">
+              <h3 className="event-modal-title">New Event</h3>
+              <p className="organizer-name">Organizer: Varshitha</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="new-event-form">
+          <div className="event-form-group">
+            <div className="form-icon">🎯</div>
+            <input
+              type="text"
+              placeholder="Title"
+              value={eventData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              className="event-input"
+            />
+          </div>
+
+          <div className="event-form-group">
+            <div className="form-icon">👥</div>
+            <input
+              type="text"
+              placeholder="Add other participants"
+              value={eventData.participants}
+              onChange={(e) => handleInputChange('participants', e.target.value)}
+              className="event-input"
+            />
+          </div>
+
+          <div className="event-form-group">
+            <div className="form-icon">📝</div>
+            <textarea
+              placeholder="Description"
+              value={eventData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              className="event-textarea"
+              rows="3"
+            />
+          </div>
+
+          <div className="all-day-toggle">
+            <span className="toggle-label">All Day</span>
+            <div 
+              className={`toggle-switch ${eventData.allDay ? 'active' : ''}`}
+              onClick={() => handleInputChange('allDay', !eventData.allDay)}
+            >
+              <div className="toggle-slider"></div>
+            </div>
+          </div>
+
+          {!eventData.allDay && (
+            <div className="datetime-section">
+              <div className="datetime-row">
+                <span className="datetime-label">Starts</span>
+                <div className="datetime-inputs">
+                  <input
+                    type="text"
+                    value={eventData.startDate}
+                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                    className="date-input"
+                  />
+                  <input
+                    type="text"
+                    value={eventData.startTime}
+                    onChange={(e) => handleInputChange('startTime', e.target.value)}
+                    className="time-input"
+                  />
+                </div>
+              </div>
+
+              <div className="datetime-row">
+                <span className="datetime-label">Ends</span>
+                <div className="datetime-inputs">
+                  <input
+                    type="text"
+                    value={eventData.endDate}
+                    onChange={(e) => handleInputChange('endDate', e.target.value)}
+                    className="date-input"
+                  />
+                  <input
+                    type="text"
+                    value={eventData.endTime}
+                    onChange={(e) => handleInputChange('endTime', e.target.value)}
+                    className="time-input"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <button 
+            className="confirm-event-btn"
+            onClick={handleSave}
+            disabled={!eventData.title.trim()}
+          >
+            CONFIRM
+          </button>
+        </div>
+
+        <div className="student-bottom-nav">
+          <div className="nav-item">
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+        // Leaderboard Component
+const Leaderboard = ({ onNavigate }) => {
+  const [activeTab, setActiveTab] = useState('allStudents');
+
+  const allStudentsData = [
+    { 
+      id: 1, 
+      name: 'Jennie', 
+      score: 7.8, 
+      avatar: '👧', 
+      rank: 1,
+      badgeColor: '#4CAF50'
+    },
+    { 
+      id: 2, 
+      name: 'Varshitha', 
+      score: 6.8, 
+      avatar: '👧', 
+      rank: 2,
+      badgeColor: '#2196F3'
+    },
+    { 
+      id: 3, 
+      name: 'Mino', 
+      score: 5.9, 
+      avatar: '👦', 
+      rank: 3,
+      badgeColor: '#9C27B0'
+    },
+    { 
+      id: 4, 
+      name: 'Zico', 
+      score: 5.8, 
+      avatar: '👦', 
+      rank: 4,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 5, 
+      name: 'Loopy', 
+      score: 5.6, 
+      avatar: '👧', 
+      rank: 5,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 6, 
+      name: 'Brian', 
+      score: 5.5, 
+      avatar: '👦', 
+      rank: 6,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 7, 
+      name: 'Zico', 
+      score: 5.3, 
+      avatar: '👦', 
+      rank: 7,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 8, 
+      name: 'Loopy', 
+      score: 5.1, 
+      avatar: '👧', 
+      rank: 8,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 9, 
+      name: 'Brian', 
+      score: 4.9, 
+      avatar: '👦', 
+      rank: 9,
+      badgeColor: '#757575'
+    }
+  ];
+
+  const inClassData = [
+    { 
+      id: 1, 
+      name: 'Jennie', 
+      score: 7.8, 
+      avatar: '👧', 
+      rank: 1,
+      badgeColor: '#4CAF50'
+    },
+    { 
+      id: 2, 
+      name: 'Varshitha', 
+      score: 6.8, 
+      avatar: '👧', 
+      rank: 2,
+      badgeColor: '#2196F3'
+    },
+    { 
+      id: 3, 
+      name: 'Mino', 
+      score: 5.9, 
+      avatar: '👦', 
+      rank: 3,
+      badgeColor: '#9C27B0'
+    },
+    { 
+      id: 4, 
+      name: 'Zico', 
+      score: 5.8, 
+      avatar: '👦', 
+      rank: 4,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 5, 
+      name: 'Loopy', 
+      score: 5.6, 
+      avatar: '👧', 
+      rank: 5,
+      badgeColor: '#757575'
+    },
+    { 
+      id: 6, 
+      name: 'Brian', 
+      score: 5.5, 
+      avatar: '👦', 
+      rank: 6,
+      badgeColor: '#757575'
+    }
+  ];
+
+  const currentData = activeTab === 'allStudents' ? allStudentsData : inClassData;
+  const topThree = currentData.slice(0, 3);
+  const remainingStudents = currentData.slice(3);
+
+  const getCircleStrokeDasharray = (score) => {
+    const radius = 35;
+    const circumference = 2 * Math.PI * radius;
+    const percentage = (score / 10) * 100; // Assuming max score is 10
+    return circumference - (percentage / 100) * circumference;
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card leaderboard-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+          ←
+        </button>
+        
+        <h2 className="leaderboard-title">Leader Board</h2>
+        
+        <div className="leaderboard-tabs">
+          <button 
+            className={`leaderboard-tab ${activeTab === 'inClass' ? 'active' : ''}`}
+            onClick={() => setActiveTab('inClass')}
+          >
+            In Class
+          </button>
+          <button 
+            className={`leaderboard-tab ${activeTab === 'allStudents' ? 'active' : ''}`}
+            onClick={() => setActiveTab('allStudents')}
+          >
+            All Students
+          </button>
+        </div>
+
+        <div className="leaderboard-content">
+          {/* Top 3 Students with Circular Progress */}
+          <div className="top-three-container">
+            {topThree.map((student, index) => (
+              <div key={student.id} className={`top-student top-student-${index + 1}`}>
+                <div className="student-circle-container">
+                  <svg className="student-progress-circle" width="80" height="80">
+                    <circle
+                      className="student-progress-bg"
+                      cx="40"
+                      cy="40"
+                      r="35"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <circle
+                      className="student-progress-fill"
+                      cx="40"
+                      cy="40"
+                      r="35"
+                      strokeWidth="4"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 35}`}
+                      strokeDashoffset={getCircleStrokeDasharray(student.score)}
+                      style={{ stroke: student.badgeColor }}
+                    />
+                  </svg>
+                  <div className="student-avatar-container">
+                    <span className="student-leaderboard-avatar">{student.avatar}</span>
+                    <div 
+                      className="student-rank-badge"
+                      style={{ backgroundColor: student.badgeColor }}
+                    >
+                      {student.rank}
+                    </div>
+                  </div>
+                </div>
+                <div className="student-info">
+                  <h4 className="student-leaderboard-name">{student.name}</h4>
+                  <p className="student-leaderboard-score">Score: {student.score}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Remaining Students List */}
+          <div className="remaining-students-list">
+            {remainingStudents.map((student) => (
+              <div key={`${student.id}-${student.rank}`} className="student-list-row">
+                <div className="student-row-left">
+                  <span className="student-row-rank">{student.rank}</span>
+                  <span className="student-row-avatar">{student.avatar}</span>
+                  <span className="student-row-name">{student.name}</span>
+                </div>
+                <span className="student-row-score">Score: {student.score}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Show More Button */}
+          <div className="show-more-container">
+            <button className="show-more-btn">
+              <span className="show-more-arrow">▼</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
           </div>
           <div 
-            className={`nav-item ${currentPage === 'feedback' ? 'active' : ''}`}
-            onClick={handleFeedbackClick}
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14,2 14,8 20,8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-              <polyline points="10,9 9,9 8,9"/>
-            </svg>
-            <span className="nav-text">My Notes</span>
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
           </div>
-        </footer>
-      )}
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('mission-list')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">Missions</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📅</span>
+            <span className="nav-label">Calendar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};// Mission List Component
+const MissionList = ({ onNavigate }) => {
+  const missions = [
+    {
+      id: 1,
+      title: "Mission 1",
+      icon: "✏️",
+      type: "assignment"
+    },
+    {
+      id: 2,
+      title: "Mission 2",
+      icon: "📋",
+      type: "project"
+    },
+    {
+      id: 3,
+      title: "Mission 3",
+      icon: "👥",
+      type: "group"
+    },
+    {
+      id: 4,
+      title: "Mission 4",
+      icon: "💻",
+      type: "digital"
+    },
+    {
+      id: 5,
+      title: "Mission 5",
+      icon: "🌐",
+      type: "web"
+    }
+  ];
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card mission-list-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+          ←
+        </button>
+        
+        <h2 className="mission-list-title">Mission</h2>
+        
+        <div className="missions-container">
+          {missions.map((mission) => (
+            <div 
+              key={mission.id}
+              className="mission-list-item"
+              onClick={() => onNavigate('mission-detail', { missionId: mission.id, missionTitle: mission.title })}
+            >
+              <div className="mission-item-left">
+                <span className="mission-item-icon">{mission.icon}</span>
+                <span className="mission-item-title">{mission.title}</span>
+              </div>
+              <span className="mission-arrow">→</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">Missions</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📅</span>
+            <span className="nav-label">Calendar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Mission Detail Component (Enhanced)
+const MissionDetail = ({ onNavigate, missionData }) => {
+  const [expandedSections, setExpandedSections] = useState({
+    courseOverview: false,
+    lectureSlides: false,
+    assignments: false,
+    grades: false,
+    quizzes: false,
+    assessment: false
+  });
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const missionInfo = {
+    title: missionData?.missionTitle || "Mission 1",
+    instructor: "Mr. Brown",
+    sections: {
+      courseOverview: {
+        icon: "📖",
+        title: "Course Overview",
+        duration: "1 hour",
+        type: "Self study: 1 hour",
+        hasContent: true
+      },
+      lectureSlides: {
+        icon: "📊",
+        title: "Lecture Slides",
+        hasContent: true,
+        items: [
+          { name: "Lecture 1", downloadable: true, type: "pdf" },
+          { name: "Lecture 2", downloadable: true, type: "pdf" }
+        ]
+      },
+      assignments: {
+        icon: "📝",
+        title: "Assignments",
+        hasContent: false,
+        items: []
+      },
+      grades: {
+        icon: "📈",
+        title: "Grades",
+        hasContent: false,
+        items: []
+      },
+      quizzes: {
+        icon: "❓",
+        title: "Quizzes",
+        hasContent: true,
+        items: [
+          { name: "Quiz 101", date: "May 20 2:30-3:0", type: "quiz" }
+        ]
+      },
+      assessment: {
+        icon: "📋",
+        title: "Assessment",
+        hasContent: true,
+        items: [
+          { name: "Quiz 101", date: "May 20 2:47-3:0", type: "assessment" }
+        ]
+      }
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card mission-detail-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('mission-list')}>
+          ←
+        </button>
+        
+        <div className="mission-detail-header">
+          <h2 className="mission-detail-title">{missionInfo.title}</h2>
+          <p className="mission-detail-instructor">{missionInfo.instructor}</p>
+        </div>
+        
+        <div className="mission-detail-content">
+          {Object.entries(missionInfo.sections).map(([key, section]) => (
+            <div key={key} className="mission-detail-section">
+              <div 
+                className="mission-detail-section-header"
+                onClick={() => toggleSection(key)}
+              >
+                <div className="section-header-left">
+                  <span className="section-header-icon">{section.icon}</span>
+                  <span className="section-header-title">{section.title}</span>
+                </div>
+                <span className={`expand-arrow-detail ${expandedSections[key] ? 'expanded' : ''}`}>
+                  {expandedSections[key] ? '▲' : '▼'}
+                </span>
+              </div>
+              
+              {expandedSections[key] && (
+                <div className="mission-detail-section-content">
+                  {key === 'courseOverview' && (
+                    <div className="course-overview-detail-content">
+                      <div className="overview-detail-item">
+                        <span className="overview-detail-icon">🕐</span>
+                        <span className="overview-detail-text">Duration: {section.duration}</span>
+                      </div>
+                      <div className="overview-detail-item">
+                        <span className="overview-detail-icon">📚</span>
+                        <span className="overview-detail-text">{section.type}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {section.items && section.items.length > 0 && (
+                    <div className="section-detail-items">
+                      {section.items.map((item, index) => (
+                        <div key={index} className="section-detail-item">
+                          <div className="item-detail-info">
+                            <div className="item-detail-main">
+                              <span className="item-detail-icon">
+                                {item.type === 'pdf' ? '📄' : 
+                                 item.type === 'quiz' ? '❓' : 
+                                 item.type === 'assessment' ? '📋' : '📄'}
+                              </span>
+                              <span className="item-detail-name">{item.name}</span>
+                            </div>
+                            {item.date && (
+                              <span className="item-detail-date">{item.date}</span>
+                            )}
+                          </div>
+                          {item.downloadable && (
+                            <button 
+                              className="download-detail-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log(`Downloading ${item.name}`);
+                              }}
+                            >
+                              ⬇
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {(!section.items || section.items.length === 0) && section.hasContent === false && (
+                    <div className="empty-detail-section">
+                      <p className="empty-detail-text">No items available</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Student Home Component
+const StudentHome = ({ onNavigate }) => {
+  const studentName = "Varshitha";
+  
+  const todaysTasks = [
+    {
+      id: 1,
+      title: "Task 1",
+      time: "11:15 AM - 12:20 PM",
+      type: "lecture"
+    },
+    {
+      id: 2,
+      title: "Task 2",
+      time: "2:30 PM - 3:30 PM", 
+      type: "assignment"
+    },
+    {
+      id: 3,
+      title: "Task 3",
+      time: "5:15 PM - 6:00 PM",
+      type: "quiz"
+    }
+  ];
+
+  const progressData = [
+    { name: "Assessment 1", score: 83, color: "#9B59B6" },
+    { name: "Assessment 2", score: 50, color: "#FF6B9D" },
+    { name: "Assessment 3", score: 50, color: "#3498DB" }
+  ];
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card student-home-card">
+        <div className="status-bar">
+        </div>
+        
+        <div className="student-home-header">
+          <div className="student-greeting">
+            <h2 className="greeting-text">Hello {studentName}!</h2>
+            <span className="notification-bell">🔔</span>
+          </div>
+          <div 
+            className="student-profile-icon"
+            onClick={() => onNavigate('student-profile')}
+          >
+            👧
+          </div>
+        </div>
+
+        <div className="search-bar-container">
+          <div className="search-bar">
+            <span className="search-icon">🔍</span>
+            <input 
+              type="text" 
+              placeholder="Search" 
+              className="search-input-field"
+            />
+          </div>
+        </div>
+
+        <div className="student-progress-section">
+          <h3 className="section-title">Progress</h3>
+          <div className="progress-circles-container">
+            {progressData.map((item, index) => (
+              <div key={index} className="progress-circle-item">
+                <div className="circular-progress-student">
+                  <svg className="progress-ring" width="60" height="60">
+                    <circle
+                      className="progress-ring-bg"
+                      cx="30"
+                      cy="30"
+                      r="25"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <circle
+                      className="progress-ring-fill"
+                      cx="30"
+                      cy="30"
+                      r="25"
+                      strokeWidth="4"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 25}`}
+                      strokeDashoffset={`${2 * Math.PI * 25 * (1 - item.score / 100)}`}
+                      style={{ stroke: item.color }}
+                    />
+                  </svg>
+                  <div className="progress-value-student">
+                    <span className="progress-percentage">{item.score}%</span>
+                  </div>
+                </div>
+                <p className="progress-label-student">{item.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="todays-tasks-section">
+          <h3 className="section-title">Today's Tasks</h3>
+          <div className="tasks-list">
+            {todaysTasks.map((task) => (
+              <div 
+                key={task.id} 
+                className={`task-item task-${task.type}`}
+                onClick={() => onNavigate('mission-detail', { taskId: task.id, taskTitle: task.title, missionTitle: task.title })}
+              >
+                <div className="task-icon">
+                  {task.type === 'lecture' ? '📝' : task.type === 'assignment' ? '📊' : '❓'}
+                </div>
+                <div className="task-details">
+                  <h4 className="task-title">{task.title}</h4>
+                  <p className="task-time">{task.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="student-bottom-nav">
+          <div className="nav-item active">
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('mission-list')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">Missions</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📅</span>
+            <span className="nav-label">Calendar</span>
+          </div>
+        </div>
+
+        <button 
+          className="join-class-fab"
+          onClick={() => onNavigate('join-class')}
+          title="Join Class"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Student Dashboard Component
+const StudentDashboard = ({ onNavigate }) => {
+  const dashboardItems = [
+    { 
+      id: 1, 
+      title: "Mission", 
+      icon: "🎯", 
+      color: "#E8F5E8",
+      onClick: () => onNavigate('mission-list')
+    },
+    { 
+      id: 2, 
+      title: "Leader Board", 
+      icon: "🏆", 
+      color: "#FFE8F0",
+      onClick: () => onNavigate('leaderboard')
+    },
+    { 
+      id: 3, 
+      title: "Scheduler", 
+      icon: "📅", 
+      color: "#E8F8FF",
+      onClick: () => onNavigate('scheduler')
+    },
+    { 
+      id: 4, 
+      title: "Pitch Jam", 
+      icon: "🎤", 
+      color: "#F0FFE8",
+      onClick: () => onNavigate('pitch-jam')
+    }
+  ];
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-home')}>
+          ←
+        </button>
+        
+        <h2 className="dashboard-page-title">Dashboard</h2>
+        
+        <div className="dashboard-grid">
+          {dashboardItems.map((item) => (
+            <div 
+              key={item.id}
+              className="dashboard-grid-item"
+              style={{ backgroundColor: item.color }}
+              onClick={item.onClick}
+            >
+              <div className="dashboard-item-icon">{item.icon}</div>
+              <h3 className="dashboard-item-title">{item.title}</h3>
+            </div>
+          ))}
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('my-notes')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('scheduler')}
+          >
+            <span className="nav-icon">📅</span>
+            <span className="nav-label">Calendar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+        
+// Mission Details Component
+const MissionDetails = ({ onNavigate, missionData }) => {
+  const [expandedSections, setExpandedSections] = useState({
+    courseOverview: true,
+    lectureSlides: false,
+    assignments: false,
+    grades: false,
+    quizzes: false,
+    assessment: false
+  });
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const missionInfo = {
+    title: missionData?.taskTitle || "Mission 1",
+    instructor: "Mr. Brown",
+    sections: {
+      courseOverview: {
+        icon: "📖",
+        title: "Course Overview",
+        duration: "1 hour",
+        type: "Self study"
+      },
+      lectureSlides: {
+        icon: "📊",
+        title: "Lecture Slides",
+        items: [
+          { name: "Lecture 1", downloadable: true },
+          { name: "Lecture 2", downloadable: true }
+        ]
+      },
+      assignments: {
+        icon: "📝",
+        title: "Assignments",
+        items: [
+          { name: "Assignment 1", downloadable: true },
+          { name: "Assignment 2", downloadable: true }
+        ]
+      },
+      grades: {
+        icon: "📈",
+        title: "Grades",
+        items: []
+      },
+      quizzes: {
+        icon: "❓",
+        title: "Quizzes",
+        items: [
+          { name: "Quiz 101", date: "May 21 2:30-3:0" }
+        ]
+      },
+      assessment: {
+        icon: "📋",
+        title: "Assessment",
+        items: [
+          { name: "Quiz 101", date: "May 21 2:47-3:0" }
+        ]
+      }
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card mission-details-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-home')}>
+          ←
+        </button>
+        
+        <div className="mission-header">
+          <h2 className="mission-title">{missionInfo.title}</h2>
+          <p className="mission-instructor">{missionInfo.instructor}</p>
+        </div>
+        
+        <div className="mission-content">
+          {Object.entries(missionInfo.sections).map(([key, section]) => (
+            <div key={key} className="mission-section">
+              <div 
+                className="mission-section-header"
+                onClick={() => toggleSection(key)}
+              >
+                <div className="section-left">
+                  <span className="section-icon">{section.icon}</span>
+                  <span className="section-title">{section.title}</span>
+                </div>
+                <span className={`expand-arrow ${expandedSections[key] ? 'expanded' : ''}`}>
+                  {expandedSections[key] ? '▲' : '▼'}
+                </span>
+              </div>
+              
+              {expandedSections[key] && (
+                <div className="mission-section-content">
+                  {key === 'courseOverview' && (
+                    <div className="course-overview-content">
+                      <div className="overview-item">
+                        <span className="overview-icon">🕐</span>
+                        <span className="overview-text">Duration: {section.duration}</span>
+                      </div>
+                      <div className="overview-item">
+                        <span className="overview-icon">📚</span>
+                        <span className="overview-text">{section.type}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {section.items && section.items.length > 0 && (
+                    <div className="section-items">
+                      {section.items.map((item, index) => (
+                        <div key={index} className="section-item">
+                          <div className="item-info">
+                            <span className="item-name">{item.name}</span>
+                            {item.date && (
+                              <span className="item-date">{item.date}</span>
+                            )}
+                          </div>
+                          {item.downloadable && (
+                            <button className="download-btn">⬇</button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {section.items && section.items.length === 0 && (
+                    <div className="empty-section">
+                      <p className="empty-text">No items available</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        <div className="mission-action-button">
+          <button className="start-mission-btn">
+            ▶ Start Mission
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Student Profile Component
+const StudentProfile = ({ onNavigate }) => {
+  const profileData = {
+    name: "Varshitha",
+    email: "varshitha@london.edu",
+    batch: "2025-2026",
+    grade: "8",
+    school: "London School",
+    class: "Mathematics 101"
+  };
+
+  const handleSignOut = () => {
+    console.log('Student signing out...');
+    onNavigate('login');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-home')}>
+          ←
+        </button>
+        
+        <h2 className="profile-title">Profile</h2>
+        
+        <div className="profile-content">
+          <div className="profile-avatar-section">
+            <div className="profile-avatar">
+              <span>👧</span>
+            </div>
+            <div className="profile-check">✓</div>
+            <h3 className="profile-name">{profileData.name}</h3>
+            <p className="profile-email">{profileData.email}</p>
+          </div>
+
+          <div className="profile-details">
+            <div className="profile-row">
+              <span className="profile-label">Batch:</span>
+              <span className="profile-value">{profileData.batch}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">Grade:</span>
+              <span className="profile-value">{profileData.grade}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">School:</span>
+              <span className="profile-value">{profileData.school}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">Class:</span>
+              <span className="profile-value">{profileData.class}</span>
+            </div>
+          </div>
+
+          <button className="signout-btn" onClick={handleSignOut}>
+            Sign Out
+          </button>
+
+          <div className="help-support">
+            <button className="help-link">
+              <span className="help-icon">❓</span>
+              Help and support
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// TeacherHome Component (existing)
+const TeacherHome = ({ onNavigate }) => {
+  const teacherName = "Alex Thompson";
+  const teacherRole = "Teacher";
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card home-card">
+        <div className="status-bar">
+        </div>
+        
+        <div className="home-header">
+          <div className="user-info" onClick={() => onNavigate('teacher-profile')}>
+            <div className="user-avatar">👨‍🏫</div>
+            <div className="user-details">
+              <h3 className="user-name">{teacherName}</h3>
+              <p className="user-role">{teacherRole}</p>
+            </div>
+          </div>
+          <button className="menu-icon">☰</button>
+        </div>
+
+        <h2 className="dashboard-title">Dashboard</h2>
+
+        <div className="dashboard-cards">
+          <div 
+            className="dashboard-card students-card"
+            onClick={() => onNavigate('students-list')}
+          >
+            <div className="card-icon">👥</div>
+            <h3 className="card-title">Students</h3>
+          </div>
+
+          <div className="dashboard-card tests-card">
+            <div className="card-icon">📊</div>
+            <h3 className="card-title">Diagnostic Tests</h3>
+          </div>
+
+          <div className="dashboard-card missions-card"
+            onClick={() => onNavigate('upload-mission')}
+          >
+            <div className="card-icon">🎯</div>
+            <h3 className="card-title">Upload Missions</h3>
+          </div>
+        </div>
+
+        <button 
+          className="floating-add-btn"
+          onClick={() => onNavigate('create-class')}
+          title="Create New Class"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// StudentProgress Component (existing)
+const StudentProgress = ({ onNavigate, studentData }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [assessmentScores, setAssessmentScores] = useState({
+    assessment1: 83,
+    assessment2: 50,
+    assessment3: 50
+  });
+
+  const handleScoreChange = (assessment, value) => {
+    setAssessmentScores(prev => ({
+      ...prev,
+      [assessment]: parseInt(value) || 0
+    }));
+  };
+
+  const studentInfo = {
+    name: studentData?.studentName || 'Varshitha',
+    email: 'varshitha@london.edu',
+    avatar: '👧',
+    totalPoints: 8.2,
+    totalGrade: 490,
+    totalCredit: 137
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+        </div>
+        
+        <div className="progress-header">
+          <button className="back-arrow" onClick={() => onNavigate('students-list')}>
+            ←
+          </button>
+          <button 
+            className="close-btn"
+            onClick={() => onNavigate('teacher-home')}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="student-progress-content">
+          <div className="student-profile-section">
+            <div className="student-profile-avatar">{studentInfo.avatar}</div>
+            <h2 className="student-profile-name">{studentInfo.name}</h2>
+            <p className="student-profile-email">{studentInfo.email}</p>
+          </div>
+
+          <div className="progress-section">
+            <h3 className="progress-title">Progress</h3>
+            <div className="assessment-circles">
+              {Object.entries(assessmentScores).map(([key, value], index) => (
+                <div key={key} className="assessment-circle-container">
+                  <div className="circular-progress">
+                    <svg className="progress-ring" width="80" height="80">
+                      <circle
+                        className="progress-ring-bg"
+                        cx="40"
+                        cy="40"
+                        r="35"
+                        strokeWidth="6"
+                        fill="none"
+                      />
+                      <circle
+                        className="progress-ring-fill"
+                        cx="40"
+                        cy="40"
+                        r="35"
+                        strokeWidth="6"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 35}`}
+                        strokeDashoffset={`${2 * Math.PI * 35 * (1 - value / 100)}`}
+                        style={{
+                          stroke: index === 0 ? '#9B59B6' : index === 1 ? '#FF6B9D' : '#3498DB'
+                        }}
+                      />
+                    </svg>
+                    <div className="progress-value">
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={value}
+                          onChange={(e) => handleScoreChange(key, e.target.value)}
+                          className="score-input"
+                        />
+                      ) : (
+                        <span>{value}%</span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="assessment-label">Assessment {index + 1}</p>
+                </div>
+              ))}
+            </div>
+            {!isEditing && (
+              <button 
+                className="edit-progress-btn"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Progress
+              </button>
+            )}
+            {isEditing && (
+              <button 
+                className="save-progress-btn"
+                onClick={() => setIsEditing(false)}
+              >
+                Save Changes
+              </button>
+            )}
+          </div>
+
+          <div className="summary-section">
+            <h3 className="summary-title">Summary</h3>
+            <div className="summary-items">
+              <div className="summary-item">
+                <span className="summary-icon">🏆</span>
+                <div className="summary-details">
+                  <span className="summary-value">{studentInfo.totalPoints}</span>
+                  <span className="summary-label">Points</span>
+                </div>
+              </div>
+              <div className="summary-item">
+                <span className="summary-icon">📊</span>
+                <div className="summary-details">
+                  <span className="summary-value">{studentInfo.totalGrade}</span>
+                  <span className="summary-label">Total grade</span>
+                </div>
+              </div>
+              <div className="summary-item">
+                <span className="summary-icon">💳</span>
+                <div className="summary-details">
+                  <span className="summary-value">{studentInfo.totalCredit}</span>
+                  <span className="summary-label">Total credit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// AddStudent Component (existing)
+const AddStudent = ({ onNavigate }) => {
+  const [studentName, setStudentName] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [batch, setBatch] = useState('2025-2026');
+  const [grade, setGrade] = useState('8');
+  const [selectedGroup, setSelectedGroup] = useState('');
+
+  const handleSubmit = () => {
+    console.log('Adding student:', { studentName, studentEmail, batch, grade, selectedGroup });
+    onNavigate('students-list');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('students-list')}>
+          ←
+        </button>
+        
+        <h2 className="add-student-title">Add Students</h2>
+        
+        <div className="add-student-form">
+          <div className="form-group">
+            <label className="form-label">Student Name</label>
+            <input
+              type="text"
+              placeholder="Enter student name"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              className="input-field"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Student Email</label>
+            <input
+              type="email"
+              placeholder="Enter student email"
+              value={studentEmail}
+              onChange={(e) => setStudentEmail(e.target.value)}
+              className="input-field"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Batch</label>
+            <div className="batch-selector">
+              <select
+                value={batch}
+                onChange={(e) => setBatch(e.target.value)}
+                className="batch-select"
+              >
+                <option value="2025-2026">2025-2026</option>
+                <option value="2024-2025">2024-2025</option>
+                <option value="2023-2024">2023-2024</option>
+              </select>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Grade</label>
+            <input
+              type="text"
+              value={grade}
+              onChange={(e) => setGrade(e.target.value)}
+              className="input-field"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Group</label>
+            <select
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+              className="input-field select-field"
+            >
+              <option value="">Select a group</option>
+              <option value="group-a">Group A</option>
+              <option value="group-b">Group B</option>
+              <option value="group-c">Group C</option>
+            </select>
+          </div>
+
+          <button 
+            onClick={handleSubmit} 
+            className="confirm-button"
+            disabled={!studentName || !studentEmail}
+          >
+            CONFIRM
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// UploadMission Component (existing)
+const UploadMission = ({ onNavigate }) => {
+  const [selectedMission, setSelectedMission] = useState('');
+  const [missionTitle, setMissionTitle] = useState('');
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [linkUrl, setLinkUrl] = useState('');
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedFile(file);
+      console.log('File uploaded:', file.name);
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log('Mission submission:', {
+      mission: selectedMission,
+      title: missionTitle,
+      file: uploadedFile,
+      link: linkUrl
+    });
+    onNavigate('teacher-home');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('teacher-home')}>
+          ←
+        </button>
+        
+        <h2 className="upload-mission-title">Upload Mission</h2>
+        
+        <div className="upload-mission-form">
+          <div className="form-group">
+            <label className="form-label">Mission</label>
+            <select
+              value={selectedMission}
+              onChange={(e) => setSelectedMission(e.target.value)}
+              className="mission-select"
+            >
+              <option value="">Select a mission</option>
+              <option value="assignment-1">Assignment 1</option>
+              <option value="project-1">Project 1</option>
+              <option value="quiz-1">Quiz 1</option>
+              <option value="homework-1">Homework 1</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Title</label>
+            <input
+              type="text"
+              placeholder="Course Overview"
+              value={missionTitle}
+              onChange={(e) => setMissionTitle(e.target.value)}
+              className="input-field"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Upload a file</label>
+            <div className="file-upload-container">
+              <input
+                type="file"
+                id="file-upload"
+                onChange={handleFileUpload}
+                className="file-input"
+                accept=".pdf,.doc,.docx,.txt,.ppt,.pptx"
+              />
+              <label htmlFor="file-upload" className="file-upload-label">
+                <span className="folder-icon">📁</span>
+                <span className="upload-text">Add from Folder</span>
+              </label>
+              {uploadedFile && (
+                <div className="uploaded-file-info">
+                  <span className="file-icon">📄</span>
+                  <span className="file-name">{uploadedFile.name}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Add a link</label>
+            <div className="link-input-container">
+              <span className="link-icon">🔗</span>
+              <input
+                type="url"
+                placeholder="Enter the URL"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                className="link-input"
+              />
+            </div>
+          </div>
+
+          <button 
+            onClick={handleSubmit} 
+            className="confirm-button"
+            disabled={!selectedMission || !missionTitle}
+          >
+            CONFIRM
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Login Component (existing)
+const Login = ({ onNavigate }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = () => {
+    console.log('Login:', { email, password });
+    onNavigate('role-selection');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <div className="decorative-shapes">
+          <div className="shape shape-1"></div>
+          <div className="shape shape-2"></div>
+          <div className="shape shape-3"></div>
+        </div>
+        
+        <div className="logo-container">
+          <div className="logo-background">
+            <span className="logo-icon">🎓</span>
+          </div>
+          <h1 className="logo">FLOSENDO</h1>
+        </div>
+        <p className="tagline">Welcome to Educity</p>
+        
+        <div className="auth-form">
+          <button 
+            type="button" 
+            className="login-button"
+            onClick={() => onNavigate('login-form')}
+          >
+            LOG IN
+          </button>
+          
+          <button 
+            type="button" 
+            className="signup-button"
+            onClick={() => onNavigate('signup')}
+          >
+            SIGN UP
+          </button>
+          
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-field"
+          />
+          
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+          
+          <button 
+            type="button" 
+            className="forgot-password"
+            onClick={() => onNavigate('otp')}
+          >
+            Forgot Password?
+          </button>
+          
+          <button onClick={handleSubmit} className="confirm-button">
+            CONFIRM
+          </button>
+        </div>
+        
+        <p className="terms">
+          By continuing to use this app, you agree to accept our<br />
+          Privacy Policy & Terms of Service.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Signup Component (existing)
+const Signup = ({ onNavigate }) => {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [reenterPassword, setReenterPassword] = useState('');
+
+  const handleSubmit = () => {
+    console.log('Signup:', { fullName, email, password });
+    onNavigate('otp');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <h1 className="logo">FLOSENDO</h1>
+        
+        <div className="auth-tabs">
+          <button 
+            className="tab-button"
+            onClick={() => onNavigate('login')}
+          >
+            LOG IN
+          </button>
+          <button className="tab-button active">SIGN UP</button>
+        </div>
+        
+        <div className="auth-form">
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="input-field"
+          />
+          
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-field"
+          />
+          
+          <input
+            type="password"
+            placeholder="Set Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+          
+          <input
+            type="password"
+            placeholder="Re-enter Password"
+            value={reenterPassword}
+            onChange={(e) => setReenterPassword(e.target.value)}
+            className="input-field"
+          />
+          
+          <button onClick={handleSubmit} className="confirm-button">
+            CONTINUE
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// OTP Verification Component (existing)
+const OTPVerification = ({ onNavigate }) => {
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+
+  const handleOtpChange = (index, value) => {
+    if (value.length <= 1 && /^\d*$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+      
+      if (value && index < 5) {
+        const nextInput = document.getElementById(`otp-${index + 1}`);
+        if (nextInput) nextInput.focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleVerify = () => {
+    console.log('OTP:', otp.join(''));
+    onNavigate('role-selection');
+  };
+
+  const handleResend = () => {
+    console.log('Resending OTP...');
+    setOtp(['', '', '', '', '', '']);
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('signup')}>
+          ←
+        </button>
+        
+        <h2 className="section-title">OTP Verification</h2>
+        <p className="section-subtitle">
+          Enter the 6 digit code we've sent to<br />
+          your registered email address.
+        </p>
+        
+        <div className="otp-container">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              id={`otp-${index}`}
+              type="text"
+              maxLength="1"
+              value={digit}
+              onChange={(e) => handleOtpChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              className="otp-input"
+            />
+          ))}
+        </div>
+        
+        <button className="resend-link" onClick={handleResend}>
+          Don't receive? <span className="resend-text">Resend</span>
+        </button>
+        
+        <button onClick={handleVerify} className="confirm-button">
+          CONTINUE
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Role Selection Component (existing)
+const RoleSelection = ({ onNavigate }) => {
+  const [selectedRole, setSelectedRole] = useState('');
+
+  const handleContinue = () => {
+    if (selectedRole) {
+      console.log('Selected role:', selectedRole);
+      if (selectedRole === 'teacher') {
+        onNavigate('teacher-home');
+      } else {
+        onNavigate('student-home');
+      }
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('otp')}>
+          ←
+        </button>
+        
+        <h2 className="section-title">Select your Role</h2>
+        
+        <div className="role-container">
+          <div
+            className={`role-card ${selectedRole === 'teacher' ? 'selected' : ''}`}
+            onClick={() => setSelectedRole('teacher')}
+          >
+            <div className="role-icon-wrapper teacher-wrapper">
+              <div className="role-icon teacher-icon">👨‍🏫</div>
+            </div>
+            <p className="role-label">Teacher</p>
+          </div>
+          
+          <div
+            className={`role-card ${selectedRole === 'student' ? 'selected' : ''}`}
+            onClick={() => setSelectedRole('student')}
+          >
+            <div className="role-icon-wrapper student-wrapper">
+              <div className="role-icon student-icon">👨‍🎓</div>
+            </div>
+            <p className="role-label">Student</p>
+          </div>
+        </div>
+        
+        <button 
+          onClick={handleContinue} 
+          className="confirm-button"
+          disabled={!selectedRole}
+        >
+          CONFIRM
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Create Class Component (existing)
+const CreateClass = ({ onNavigate }) => {
+  const [className, setClassName] = useState('');
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [showStudentList, setShowStudentList] = useState(false);
+
+  const availableStudents = [
+    { id: 1, name: 'Alex Johnson', avatar: '👦' },
+    { id: 2, name: 'Sarah Williams', avatar: '👧' },
+    { id: 3, name: 'Mike Davis', avatar: '👦' },
+    { id: 4, name: 'Emma Brown', avatar: '👧' },
+    { id: 5, name: 'Chris Wilson', avatar: '👦' },
+    { id: 6, name: 'Lisa Anderson', avatar: '👧' },
+  ];
+
+  const handleSubmit = () => {
+    console.log('Create class:', { className, selectedStudents });
+  };
+
+  const toggleStudent = (student) => {
+    setSelectedStudents(prev => {
+      const exists = prev.find(s => s.id === student.id);
+      if (exists) {
+        return prev.filter(s => s.id !== student.id);
+      } else {
+        return [...prev, student];
+      }
+    });
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('teacher-home')}>
+          ←
+        </button>
+        
+        <h2 className="section-title">Create a Class</h2>
+        
+        <div className="auth-form">
+          <label className="input-label">Class Name</label>
+          <input
+            type="text"
+            placeholder="Enter class name"
+            value={className}
+            onChange={(e) => setClassName(e.target.value)}
+            className="input-field"
+          />
+          
+          <label className="input-label">Students</label>
+          <div className="students-section">
+            <div className="students-preview">
+              {selectedStudents.length === 0 ? (
+                <div className="empty-students">
+                  <div className="empty-avatar-group">
+                    <div className="empty-avatar">👤</div>
+                    <div className="empty-avatar">👤</div>
+                    <div className="empty-avatar">👤</div>
+                  </div>
+                  <p className="empty-text">No students added yet</p>
+                </div>
+              ) : (
+                <div className="selected-students-grid">
+                  {selectedStudents.slice(0, 6).map((student, index) => (
+                    <div key={student.id} className="student-avatar-container">
+                      <div className="student-avatar">{student.avatar}</div>
+                      <span className="student-name">{student.name.split(' ')[0]}</span>
+                    </div>
+                  ))}
+                  {selectedStudents.length > 6 && (
+                    <div className="student-avatar-container">
+                      <div className="student-avatar more">+{selectedStudents.length - 6}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <button 
+              type="button" 
+              className="add-from-list-btn"
+              onClick={() => setShowStudentList(!showStudentList)}
+            >
+              📋 Add from List
+            </button>
+          </div>
+          
+          {showStudentList && (
+            <div className="student-list-modal">
+              <div className="student-list-header">
+                <h3>Select Students</h3>
+                <button 
+                  className="close-btn"
+                  onClick={() => setShowStudentList(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="student-list">
+                {availableStudents.map(student => (
+                  <div 
+                    key={student.id} 
+                    className={`student-list-item ${selectedStudents.find(s => s.id === student.id) ? 'selected' : ''}`}
+                    onClick={() => toggleStudent(student)}
+                  >
+                    <div className="student-info">
+                      <span className="student-list-avatar">{student.avatar}</span>
+                      <span className="student-list-name">{student.name}</span>
+                    </div>
+                    <div className="student-checkbox">
+                      {selectedStudents.find(s => s.id === student.id) && '✓'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <button 
+            onClick={handleSubmit} 
+            className="confirm-button"
+            style={{ marginTop: 'auto' }}
+          >
+            CONFIRM
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Join Class Component (updated)
+const JoinClass = ({ onNavigate }) => {
+  const [selectedClass, setSelectedClass] = useState('');
+
+  const handleSubmit = () => {
+    if (selectedClass) {
+      console.log('Join class:', selectedClass);
+      onNavigate('student-home');
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-home')}>
+          ←
+        </button>
+        
+        <h2 className="section-title">Join a Class</h2>
+        
+        <div className="auth-form">
+          <label className="input-label">Class Name</label>
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className="input-field select-field"
+          >
+            <option value="">Select a class</option>
+            <option value="class1">Mathematics 101</option>
+            <option value="class2">Science Lab</option>
+            <option value="class3">English Literature</option>
+          </select>
+          
+          <button 
+            onClick={handleSubmit} 
+            className="confirm-button"
+            disabled={!selectedClass}
+          >
+            CONFIRM
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Teacher Profile Component (existing)
+const TeacherProfile = ({ onNavigate }) => {
+  const profileData = {
+    name: "Alex",
+    email: "teacher@london.edu",
+    batch: "2025-2026",
+    grade: "8",
+    school: "London School",
+    department: "Mathematics"
+  };
+
+  const handleSignOut = () => {
+    console.log('Teacher signing out...');
+    onNavigate('login');
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('teacher-home')}>
+          ←
+        </button>
+        
+        <h2 className="profile-title">Profile</h2>
+        
+        <div className="profile-content">
+          <div className="profile-avatar-section">
+            <div className="profile-avatar">
+              <span>👨‍🏫</span>
+            </div>
+            <div className="profile-check">✓</div>
+            <h3 className="profile-name">{profileData.name}</h3>
+            <p className="profile-email">{profileData.email}</p>
+          </div>
+
+          <div className="profile-details">
+            <div className="profile-row">
+              <span className="profile-label">Batch:</span>
+              <span className="profile-value">{profileData.batch}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">Grade:</span>
+              <span className="profile-value">{profileData.grade}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">School:</span>
+              <span className="profile-value">{profileData.school}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">Department:</span>
+              <span className="profile-value">{profileData.department}</span>
+            </div>
+          </div>
+
+          <button className="signout-btn" onClick={handleSignOut}>
+            Sign Out
+          </button>
+
+          <div className="help-support">
+            <button className="help-link">
+              <span className="help-icon">❓</span>
+              Help and support
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Students List Component (existing)
+const StudentsList = ({ onNavigate }) => {
+  const students = [
+    { id: 1, name: 'Varshitha', score: 100, avatar: '👧', medal: '🏆' },
+    { id: 2, name: 'Jennie', score: 98, avatar: '👧', medal: '🏆' },
+    { id: 3, name: 'Mino', score: 90, avatar: '👦', medal: '🏆' },
+    { id: 4, name: 'Zico', score: 88, avatar: '👦', medal: '🏆' },
+    { id: 5, name: 'Loopy', score: 85, avatar: '👧', medal: '🏆' },
+  ];
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('teacher-home')}>
+          ←
+        </button>
+        
+        <div className="students-header">
+          <h2 className="students-title">Students</h2>
+          <button className="add-student-icon" onClick={() => onNavigate('create-class')}>
+            +
+          </button>
+        </div>
+        
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Enter student's name"
+            className="search-input"
+          />
+          <span className="search-icon">🔍</span>
+        </div>
+
+        <div className="students-list">
+          {students.map((student, index) => (
+            <div 
+              key={student.id} 
+              className="student-row"
+              onClick={() => onNavigate('student-progress', { studentId: student.id, studentName: student.name })}
+            >
+              <div className="student-left">
+                <span className="student-medal">{student.medal}</span>
+                <span className="student-list-avatar">{student.avatar}</span>
+                <span className="student-list-name">{student.name}</span>
+              </div>
+              <span className="student-score">{student.score}</span>
+            </div>
+          ))}
+        </div>
+
+        <button 
+          className="add-students-btn"
+          onClick={() => onNavigate('add-student')}
+        >
+          Add Students
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Main App Component (updated)
+const App = () => {
+  const [currentScreen, setCurrentScreen] = useState('login');
+  const [navigationData, setNavigationData] = useState(null);
+
+  const handleNavigate = (screen, data = null) => {
+    setCurrentScreen(screen);
+    setNavigationData(data);
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'login':
+        return <Login onNavigate={handleNavigate} />;
+      case 'signup':
+        return <Signup onNavigate={handleNavigate} />;
+      case 'otp':
+        return <OTPVerification onNavigate={handleNavigate} />;
+      case 'role-selection':
+        return <RoleSelection onNavigate={handleNavigate} />;
+      case 'create-class':
+        return <CreateClass onNavigate={handleNavigate} />;
+      case 'join-class':
+        return <JoinClass onNavigate={handleNavigate} />;
+      case 'teacher-home':
+        return <TeacherHome onNavigate={handleNavigate} />;
+      case 'teacher-profile':
+        return <TeacherProfile onNavigate={handleNavigate} />;
+      case 'students-list':
+        return <StudentsList onNavigate={handleNavigate} />;
+      case 'student-progress':
+        return <StudentProgress onNavigate={handleNavigate} studentData={navigationData} />;
+      case 'add-student':
+        return <AddStudent onNavigate={handleNavigate} />;
+      case 'upload-mission':
+        return <UploadMission onNavigate={handleNavigate} />;
+      case 'student-home':
+        return <StudentHome onNavigate={handleNavigate} />;
+      case 'student-dashboard':
+        return <StudentDashboard onNavigate={handleNavigate} />;
+      case 'student-profile':
+        return <StudentProfile onNavigate={handleNavigate} />;
+      case 'mission-list':
+        return <MissionList onNavigate={handleNavigate} />;
+      case 'mission-detail':
+        return <MissionDetail onNavigate={handleNavigate} missionData={navigationData} />;
+      case 'mission-details':
+        return <MissionDetails onNavigate={handleNavigate} missionData={navigationData} />;
+      case 'leaderboard':
+        return <Leaderboard onNavigate={handleNavigate} />;
+      case 'scheduler':
+        return <Scheduler onNavigate={handleNavigate} />;
+      case 'pitch-jam':
+        return <PitchJam onNavigate={handleNavigate} />;
+      case 'my-notes':
+        return <MyNotes onNavigate={handleNavigate} />;
+      case 'new-note':
+        return <NewNote onNavigate={handleNavigate} />;
+      default:
+        return <Login onNavigate={handleNavigate} />;
+    }
+  };
+
+  return (
+    <div className="app">
+      {renderScreen()}
     </div>
   );
 };

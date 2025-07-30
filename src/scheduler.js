@@ -1,233 +1,315 @@
-import React, { useState } from 'react';
-
-const Scheduler = () => {
+// Scheduler Component
+const Scheduler = ({ onNavigate }) => {
   const [selectedDate, setSelectedDate] = useState(20);
   const [showNewEvent, setShowNewEvent] = useState(false);
 
-  const handleDateClick = (date) => {
-    console.log(`Date ${date} clicked`);
-    setSelectedDate(date);
-  };
+  const calendarDays = [
+    { date: 19, day: 'Fri', isActive: false },
+    { date: 20, day: 'Sat', isActive: true },
+    { date: 21, day: 'Sun', isActive: false },
+    { date: 22, day: 'Mon', isActive: false }
+  ];
 
-  const handleEventClick = (eventName) => {
-    console.log(`Event clicked: ${eventName}`);
-    alert(`Opening ${eventName}...`);
-  };
+  const events = [
+    {
+      id: 1,
+      title: 'EDEN Day 1',
+      time: '10:30 AM - 11:30 AM',
+      timeSlot: '10 am',
+      color: '#f0f0f0',
+      textColor: '#333'
+    },
+    {
+      id: 2,
+      title: 'EDEN Day 2',
+      time: '12:40 PM - 1:40 PM',
+      timeSlot: '12 pm',
+      color: '#E8B4FF',
+      textColor: '#333'
+    }
+  ];
 
-  const handleNewEventClick = () => {
-    console.log('New event clicked');
-    setShowNewEvent(true);
-  };
-
-  const closeNewEvent = () => {
-    setShowNewEvent(false);
-  };
-
-  const handleCreateEvent = () => {
-    console.log('Creating new event');
-    alert('Event created successfully!');
-    setShowNewEvent(false);
-  };
+  const timeSlots = [
+    '10 am',
+    '11 am', 
+    '12 pm',
+    '01 pm',
+    '02 pm'
+  ];
 
   return (
-    <main className="main-content">
-      <div className="scheduler-container">
+    <div className="auth-container">
+      <div className="auth-card scheduler-card">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+            <span className="signal">📶</span>
+            <span className="wifi">📶</span>
+            <span className="battery">🔋</span>
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={() => onNavigate('student-dashboard')}>
+          ←
+        </button>
+        
         <div className="scheduler-header">
-          <h2 className="scheduler-title">May, 20 ⚡</h2>
-          <span className="scheduler-tasks">15 task today</span>
+          <h2 className="scheduler-title">Scheduler</h2>
+          <button 
+            className="add-event-btn"
+            onClick={() => setShowNewEvent(true)}
+          >
+            +
+          </button>
         </div>
 
-        {/* Calendar Section */}
-        <div className="calendar-section">
-          <div className="calendar-dates">
-            <div 
-              className={`calendar-date ${selectedDate === 19 ? 'active' : ''}`}
-              onClick={() => handleDateClick(19)}
-            >
-              <span className="date-number">19</span>
-              <span className="date-day">Fri</span>
-            </div>
-            <div 
-              className={`calendar-date ${selectedDate === 20 ? 'active selected' : ''}`}
-              onClick={() => handleDateClick(20)}
-            >
-              <span className="date-number">20</span>
-              <span className="date-day">Sat</span>
-            </div>
-            <div 
-              className={`calendar-date ${selectedDate === 21 ? 'active' : ''}`}
-              onClick={() => handleDateClick(21)}
-            >
-              <span className="date-number">21</span>
-              <span className="date-day">Sun</span>
-            </div>
-            <div 
-              className={`calendar-date ${selectedDate === 22 ? 'active' : ''}`}
-              onClick={() => handleDateClick(22)}
-            >
-              <span className="date-number">22</span>
-              <span className="date-day">Mon</span>
-            </div>
-          </div>
+        <div className="date-header">
+          <h3 className="date-title">May, 20</h3>
+          <p className="task-count">15 task today</p>
         </div>
 
-        {/* Events Section */}
-        <div className="events-section">
-          <div className="time-slot">
-            <span className="time-label">10 am</span>
-            <div className="time-line"></div>
-          </div>
-
-          <div 
-            className="event-item eden-day-1"
-            onClick={() => handleEventClick('Eden day 1')}
-          >
-            <div className="event-content">
-              <h4 className="event-title">Eden day 1</h4>
-              <div className="event-avatars">
-                <div className="avatar avatar-1"></div>
-                <div className="avatar avatar-2"></div>
-                <div className="avatar avatar-3"></div>
-              </div>
-              <span className="event-time">10:00am - 11:30am</span>
+        <div className="calendar-row">
+          {calendarDays.map((day) => (
+            <div 
+              key={day.date}
+              className={`calendar-day ${day.isActive ? 'active' : ''}`}
+              onClick={() => setSelectedDate(day.date)}
+            >
+              <span className="day-number">{day.date}</span>
+              <span className="day-name">{day.day}</span>
             </div>
-          </div>
-
-          <div className="time-slot">
-            <span className="time-label">11 am</span>
-            <div className="time-line"></div>
-          </div>
-
-          <div 
-            className="event-item eden-day-2"
-            onClick={() => handleEventClick('Eden day 2')}
-          >
-            <div className="event-content">
-              <h4 className="event-title">Eden day 2</h4>
-              <div className="event-avatars">
-                <div className="avatar avatar-1"></div>
-                <div className="avatar avatar-2"></div>
-                <div className="avatar avatar-3"></div>
-              </div>
-              <span className="event-time">11:40am - 12:40am</span>
-            </div>
-          </div>
-
-          <div className="time-slot">
-            <span className="time-label">12 pm</span>
-            <div className="time-line"></div>
-          </div>
-
-          <div className="time-slot">
-            <span className="time-label">01 pm</span>
-            <div className="time-line"></div>
-          </div>
-
-          <div 
-            className="event-item organizational-quiz"
-            onClick={() => handleEventClick('Organizational Behaviour Quiz')}
-          >
-            <div className="event-content">
-              <h4 className="event-title">Organizational Behaviour Quiz</h4>
-              <div className="event-avatars">
-                <div className="avatar avatar-1"></div>
-                <div className="avatar avatar-2"></div>
-                <div className="avatar avatar-3"></div>
-              </div>
-              <span className="event-time">01:30pm - 1:40pm</span>
-            </div>
-          </div>
-
-          <div className="time-slot">
-            <span className="time-label">02 pm</span>
-            <div className="time-line"></div>
-          </div>
-
-          <div className="time-slot">
-            <span className="time-label">03 pm</span>
-            <div className="time-line"></div>
-          </div>
+          ))}
         </div>
 
-        {/* Add Event Button */}
-        <div className="add-event-button" onClick={handleNewEventClick}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+        <div className="schedule-timeline">
+          {timeSlots.map((timeSlot) => {
+            const event = events.find(e => e.timeSlot === timeSlot);
+            return (
+              <div key={timeSlot} className="timeline-row">
+                <div className="time-label">{timeSlot}</div>
+                <div className="timeline-content">
+                  {event && (
+                    <div 
+                      className="event-card"
+                      style={{ 
+                        backgroundColor: event.color,
+                        color: event.textColor 
+                      }}
+                    >
+                      <h4 className="event-title">{event.title}</h4>
+                      <p className="event-time">{event.time}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="student-bottom-nav">
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-home')}
+          >
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('student-dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div 
+            className="nav-item"
+            onClick={() => onNavigate('mission-list')}
+          >
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">Missions</span>
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📅</span>
+            <span className="nav-label">Calendar</span>
+          </div>
         </div>
 
         {/* New Event Modal */}
         {showNewEvent && (
-          <div className="modal-overlay" onClick={closeNewEvent}>
-            <div className="new-event-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3>New Event</h3>
-                <button className="close-button" onClick={closeNewEvent}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="modal-content">
-                <div className="form-group">
-                  <label>Title</label>
-                  <input type="text" placeholder="Event title..." />
-                </div>
-                
-                <div className="form-group">
-                  <label>Add other participants</label>
-                  <input type="text" placeholder="Enter email addresses..." />
-                </div>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Date</label>
-                    <input type="text" value="Sun, 21st May" readOnly />
-                    <span className="form-note">Today</span>
-                  </div>
-                  <div className="form-group">
-                    <label>Time</label>
-                    <input type="text" value="12:00 - 13:00" readOnly />
-                    <span className="form-note">Duration: 1 Hour</span>
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <label>All Day</label>
-                  <div className="toggle-switch">
-                    <input type="checkbox" id="allDay" />
-                    <label htmlFor="allDay" className="toggle-label"></label>
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <label>Repeat</label>
-                  <select>
-                    <option>None</option>
-                    <option>Daily</option>
-                    <option>Weekly</option>
-                    <option>Monthly</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>Description</label>
-                  <textarea placeholder="Add description..."></textarea>
-                </div>
-                
-                <button className="create-event-button" onClick={handleCreateEvent}>
-                  Create Event
-                </button>
-              </div>
-            </div>
-          </div>
+          <NewEventModal 
+            onClose={() => setShowNewEvent(false)}
+            onSave={(eventData) => {
+              console.log('New event:', eventData);
+              setShowNewEvent(false);
+            }}
+          />
         )}
       </div>
-    </main>
+    </div>
   );
 };
 
-export default Scheduler;
+// New Event Modal Component
+const NewEventModal = ({ onClose, onSave }) => {
+  const [eventData, setEventData] = useState({
+    title: '',
+    participants: '',
+    description: '',
+    allDay: false,
+    startDate: '10 Jul 2025',
+    startTime: '8:00 AM',
+    endDate: '10 Jul 2025',
+    endTime: '9:00 AM'
+  });
+
+  const handleInputChange = (field, value) => {
+    setEventData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = () => {
+    onSave(eventData);
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="auth-card new-event-modal">
+        <div className="status-bar">
+          <span className="time">8:15</span>
+          <div className="status-icons">
+            <span className="signal">📶</span>
+            <span className="wifi">📶</span>
+            <span className="battery">🔋</span>
+          </div>
+        </div>
+        
+        <button className="back-arrow" onClick={onClose}>
+          ←
+        </button>
+
+        <div className="new-event-header">
+          <div className="event-organizer">
+            <div className="organizer-avatar">👧</div>
+            <div className="organizer-info">
+              <h3 className="event-modal-title">New Event</h3>
+              <p className="organizer-name">Organizer: Varshitha</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="new-event-form">
+          <div className="event-form-group">
+            <div className="form-icon">🎯</div>
+            <input
+              type="text"
+              placeholder="Title"
+              value={eventData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              className="event-input"
+            />
+          </div>
+
+          <div className="event-form-group">
+            <div className="form-icon">👥</div>
+            <input
+              type="text"
+              placeholder="Add other participants"
+              value={eventData.participants}
+              onChange={(e) => handleInputChange('participants', e.target.value)}
+              className="event-input"
+            />
+          </div>
+
+          <div className="event-form-group">
+            <div className="form-icon">📝</div>
+            <textarea
+              placeholder="Description"
+              value={eventData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              className="event-textarea"
+              rows="3"
+            />
+          </div>
+
+          <div className="all-day-toggle">
+            <span className="toggle-label">All Day</span>
+            <div 
+              className={`toggle-switch ${eventData.allDay ? 'active' : ''}`}
+              onClick={() => handleInputChange('allDay', !eventData.allDay)}
+            >
+              <div className="toggle-slider"></div>
+            </div>
+          </div>
+
+          {!eventData.allDay && (
+            <div className="datetime-section">
+              <div className="datetime-row">
+                <span className="datetime-label">Starts</span>
+                <div className="datetime-inputs">
+                  <input
+                    type="text"
+                    value={eventData.startDate}
+                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                    className="date-input"
+                  />
+                  <input
+                    type="text"
+                    value={eventData.startTime}
+                    onChange={(e) => handleInputChange('startTime', e.target.value)}
+                    className="time-input"
+                  />
+                </div>
+              </div>
+
+              <div className="datetime-row">
+                <span className="datetime-label">Ends</span>
+                <div className="datetime-inputs">
+                  <input
+                    type="text"
+                    value={eventData.endDate}
+                    onChange={(e) => handleInputChange('endDate', e.target.value)}
+                    className="date-input"
+                  />
+                  <input
+                    type="text"
+                    value={eventData.endTime}
+                    onChange={(e) => handleInputChange('endTime', e.target.value)}
+                    className="time-input"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <button 
+            className="confirm-event-btn"
+            onClick={handleSave}
+            disabled={!eventData.title.trim()}
+          >
+            CONFIRM
+          </button>
+        </div>
+
+        <div className="student-bottom-nav">
+          <div className="nav-item">
+            <span className="nav-icon">🏠</span>
+            <span className="nav-label">Home</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Dashboard</span>
+          </div>
+          <div className="nav-item">
+            <span className="nav-icon">📚</span>
+            <span className="nav-label">My Notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Export the components
+export { Scheduler, NewEventModal };
